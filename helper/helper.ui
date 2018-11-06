@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>helper</class>
+ <widget class="QMainWindow" name="helper">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -410,33 +410,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Стиль</string>
-    </property>
-    <addaction name="actionTimes_New_Roman"/>
-    <addaction name="actionArial"/>
-    <addaction name="actionCalibri"/>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>Размер</string>
-    </property>
-    <addaction name="actionFont8"/>
-    <addaction name="actionFont12"/>
-    <addaction name="actionFont14"/>
-   </widget>
-   <widget class="QMenu" name="menu_3">
-    <property name="title">
-     <string>Начертание</string>
-    </property>
-    <addaction name="actionNormal"/>
-    <addaction name="actionBold"/>
-    <addaction name="actionItalic"/>
-   </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -447,51 +420,6 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionTimes_New_Roman">
-   <property name="text">
-    <string>Times New Roman</string>
-   </property>
-  </action>
-  <action name="actionArial">
-   <property name="text">
-    <string>Arial</string>
-   </property>
-  </action>
-  <action name="actionCalibri">
-   <property name="text">
-    <string>Calibri</string>
-   </property>
-  </action>
-  <action name="actionFont8">
-   <property name="text">
-    <string>8</string>
-   </property>
-  </action>
-  <action name="actionFont12">
-   <property name="text">
-    <string>12</string>
-   </property>
-  </action>
-  <action name="actionFont14">
-   <property name="text">
-    <string>14</string>
-   </property>
-  </action>
-  <action name="actionNormal">
-   <property name="text">
-    <string>Normal</string>
-   </property>
-  </action>
-  <action name="actionBold">
-   <property name="text">
-    <string>Bold</string>
-   </property>
-  </action>
-  <action name="actionItalic">
-   <property name="text">
-    <string>Italic</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>

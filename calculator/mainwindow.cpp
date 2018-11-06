@@ -1,7 +1,33 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include <QLibrary>
+#include <QDebug>
 #include <iostream>
 #include <sstream>
+
+//bool whatBtn(int fromBase, int n) {
+//    return fromBase >= n;
+//}
+
+//string numToBaseStr(long long n, int base) {
+//    const string chars = "0123456789ABCDEF";
+//    string str = "";
+//    if (n == 0)
+//        return "0";
+//    while (n > 0) {
+//        int digit = n % base;
+//        str = chars[digit] + str;
+//        n /= base;
+//    }
+//    return str;
+//}
+
+//void showInfo() {
+//    QMessageBox msgBox;
+//    msgBox.setText("Калькулятор-конвертер для преобразования чисел из произвольных систем счисления в произвольные (можно ограничиться 16-ричной системой).\nМарковский Роман\n3 курс\nПО-1");
+//    msgBox.exec();
+//}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -36,41 +62,50 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->cbFrom, SIGNAL(currentIndexChanged(int)), this, SLOT(changedComboBoxFrom(int)));
     connect(ui->cbTo, SIGNAL(currentIndexChanged(int)), this, SLOT(changedComboBoxTo(int)));
+
+    connect(ui->actionTimes_New_Roman, SIGNAL(triggered()), this, SLOT(changedTimesNewRoman()));
+    connect(ui->actionArial, SIGNAL(triggered()), this, SLOT(changedArial()));
+    connect(ui->actionCalibri, SIGNAL(triggered()), this, SLOT(changedCalibri()));
+    connect(ui->actionFont8, SIGNAL(triggered()), this, SLOT(changedFont8()));
+    connect(ui->actionFont12, SIGNAL(triggered()), this, SLOT(changedFont12()));
+    connect(ui->actionFont14, SIGNAL(triggered()), this, SLOT(changedFont14()));
+    connect(ui->actionNormal, SIGNAL(triggered()), this, SLOT(changedNormal()));
+    connect(ui->actionBold, SIGNAL(triggered()), this, SLOT(changedBold()));
+    connect(ui->actionItalic, SIGNAL(triggered()), this, SLOT(changedItalic()));
+
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-string MainWindow::numToBaseStr(long long n, int base) {
-    const string chars = "0123456789ABCDEF";
-    string str = "";
-    if (n == 0)
-        return "0";
-    while (n > 0) {
-        int digit = n % base;
-        str = chars[digit] + str;
-        n /= base;
-    }
-    return str;
-}
-
 void MainWindow::setFromBase(int n) {
     fromBase = n;
-    ui->btn2->setEnabled(fromBase < 3 ? false : true);
-    ui->btn3->setEnabled(fromBase < 4 ? false : true);
-    ui->btn4->setEnabled(fromBase < 5 ? false : true);
-    ui->btn5->setEnabled(fromBase < 5 ? false : true);
-    ui->btn6->setEnabled(fromBase < 5 ? false : true);
-    ui->btn7->setEnabled(fromBase < 5 ? false : true);
-    ui->btn8->setEnabled(fromBase < 9 ? false : true);
-    ui->btn9->setEnabled(fromBase < 9 ? false : true);
-    ui->btnA->setEnabled(fromBase < 11 ? false : true);
-    ui->btnB->setEnabled(fromBase < 11 ? false : true);
-    ui->btnC->setEnabled(fromBase < 11 ? false : true);
-    ui->btnD->setEnabled(fromBase < 11 ? false : true);
-    ui->btnE->setEnabled(fromBase < 11 ? false : true);
-    ui->btnF->setEnabled(fromBase < 11 ? false : true);
+
+    QLibrary lib( "C:\\Users\\romark\\Dropbox\\OSISP\\project\\OSISP\\build-calculator-Desktop_Qt_5_11_1_MinGW_32bit-Debug\\debug\\helper_functions.dll");
+    if( !lib.load() ) {
+        qDebug() << "Loading failed!";
+        return;
+    }
+
+    typedef bool ( *WhatBtn )( int, int );
+    WhatBtn whatBtn = (WhatBtn) lib.resolve("whatBtn");
+    if (whatBtn) {
+        ui->btn2->setEnabled(whatBtn(fromBase, 3));
+        ui->btn3->setEnabled(whatBtn(fromBase, 4));
+        ui->btn4->setEnabled(whatBtn(fromBase, 5));
+        ui->btn5->setEnabled(whatBtn(fromBase, 5));
+        ui->btn6->setEnabled(whatBtn(fromBase, 5));
+        ui->btn7->setEnabled(whatBtn(fromBase, 5));
+        ui->btn8->setEnabled(whatBtn(fromBase, 9));
+        ui->btn9->setEnabled(whatBtn(fromBase, 9));
+        ui->btnA->setEnabled(whatBtn(fromBase, 11));
+        ui->btnB->setEnabled(whatBtn(fromBase, 11));
+        ui->btnC->setEnabled(whatBtn(fromBase, 11));
+        ui->btnD->setEnabled(whatBtn(fromBase, 11));
+        ui->btnE->setEnabled(whatBtn(fromBase, 11));
+        ui->btnF->setEnabled(whatBtn(fromBase, 11));
+    }
 }
 
 int MainWindow::getFromBase() {
@@ -88,6 +123,16 @@ int MainWindow::getToBase() {
 void MainWindow::changeLabelTo() {
     bool ok;
     long long num = ui->lFrom->text().toLongLong(&ok, getFromBase());
+
+    QLibrary lib( "C:\\Users\\romark\\Dropbox\\OSISP\\project\\OSISP\\build-calculator-Desktop_Qt_5_11_1_MinGW_32bit-Debug\\debug\\helper_functions.dll");
+    if( !lib.load() ) {
+        qDebug() << "Loading failed!";
+        return;
+    }
+
+    typedef string ( *NumToBaseStr )( long long, int );
+    NumToBaseStr numToBaseStr = (NumToBaseStr) lib.resolve("numToBaseStr");
+
     QString newStr = QString::fromStdString(numToBaseStr(num, getToBase()));
     ui->lTo->setText(newStr);
 }
@@ -220,13 +265,16 @@ void MainWindow::clickedButtonClear() {
 }
 
 void MainWindow::clickedButtonAbout() {
-    showInfo();
-}
 
-void MainWindow::showInfo() {
-    QMessageBox msgBox;
-    msgBox.setText(" Калькулятор-конвертер для преобразования чисел из произвольных систем счисления в произвольные (можно ограничиться 16-ричной системой).");
-    msgBox.exec();
+    QLibrary lib( "C:\\Users\\romark\\Dropbox\\OSISP\\project\\OSISP\\build-calculator-Desktop_Qt_5_11_1_MinGW_32bit-Debug\\debug\\about.dll");
+    if( !lib.load() ) {
+        qDebug() << "Loading failed!";
+        return;
+    }
+
+    typedef void ( *ShowInfo )();
+    ShowInfo showInfo = (ShowInfo) lib.resolve("showInfo");
+    showInfo();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event) {
@@ -286,4 +334,61 @@ void MainWindow::keyPressEvent(QKeyEvent* event) {
         emit ui->btnBackspace->animateClick();
         break;
     }
+}
+
+void MainWindow::changedTimesNewRoman() {
+    QFont font = ui->centralWidget->font();
+    font.setFamily("Times New Roman");
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedArial() {
+    QFont font = ui->centralWidget->font();
+    font.setFamily("Arial");
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedCalibri() {
+    QFont font = ui->centralWidget->font();
+    font.setFamily("Calibri");
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedFont8() {
+    QFont font = ui->centralWidget->font();
+    font.setPixelSize(8);
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedFont12() {
+    QFont font = ui->centralWidget->font();
+    font.setPixelSize(12);
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedFont14() {
+    QFont font = ui->centralWidget->font();
+    font.setPixelSize(14);
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedNormal() {
+    QFont font = ui->centralWidget->font();
+    font.setBold(false);
+    font.setItalic(false);
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedBold() {
+    QFont font = ui->centralWidget->font();
+    font.setBold(true);
+    font.setItalic(false);
+    ui->centralWidget->setFont(font);
+}
+
+void MainWindow::changedItalic() {
+    QFont font = ui->centralWidget->font();
+    font.setBold(false);
+    font.setItalic(true);
+    ui->centralWidget->setFont(font);
 }

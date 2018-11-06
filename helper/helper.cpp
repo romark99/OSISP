@@ -1,17 +1,18 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "helper.h"
+#include "ui_helper.h"
 #include <iostream>
+#include <sstream>
 
-MainWindow::MainWindow(QWidget *parent) :
+Helper::Helper(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::Helper)
 {
-
     ui->setupUi(this);
     this->setFocus();
 
+    setFromBase(10);
+    setToBase(2);
 
-    setBase(10);
 
     connect(ui->btn0, SIGNAL(clicked()), this, SLOT(clickedButton0()));
     connect(ui->btn1, SIGNAL(clicked()), this, SLOT(clickedButton1()));
@@ -31,36 +32,71 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->btnF, SIGNAL(clicked()), this, SLOT(clickedButtonF()));
     connect(ui->btnBackspace, SIGNAL(clicked()), this, SLOT(clickedButtonBack()));
     connect(ui->btnClear, SIGNAL(clicked()), this, SLOT(clickedButtonClear()));
+    connect(ui->btnAbout, SIGNAL(clicked()), this, SLOT(clickedButtonAbout()));
 
     connect(ui->cbFrom, SIGNAL(currentIndexChanged(int)), this, SLOT(changedComboBoxFrom(int)));
-
-    //changeSystemFrom(10);
+    connect(ui->cbTo, SIGNAL(currentIndexChanged(int)), this, SLOT(changedComboBoxTo(int)));
 }
 
-MainWindow::~MainWindow() {
+Helper::~Helper() {
     delete ui;
 }
 
-void MainWindow::setBase(int n) {
-    base = n;
-    changeSystemFrom(base);
+string Helper::numToBaseStr(long long n, int base) {
+    const string chars = "0123456789ABCDEF";
+    string str = "";
+    if (n == 0)
+        return "0";
+    while (n > 0) {
+        int digit = n % base;
+        str = chars[digit] + str;
+        n /= base;
+    }
+    return str;
 }
 
-int MainWindow::getBase() {
-    return base;
+void Helper::setFromBase(int n) {
+    fromBase = n;
+    ui->btn2->setEnabled(fromBase < 3 ? false : true);
+    ui->btn3->setEnabled(fromBase < 4 ? false : true);
+    ui->btn4->setEnabled(fromBase < 5 ? false : true);
+    ui->btn5->setEnabled(fromBase < 5 ? false : true);
+    ui->btn6->setEnabled(fromBase < 5 ? false : true);
+    ui->btn7->setEnabled(fromBase < 5 ? false : true);
+    ui->btn8->setEnabled(fromBase < 9 ? false : true);
+    ui->btn9->setEnabled(fromBase < 9 ? false : true);
+    ui->btnA->setEnabled(fromBase < 11 ? false : true);
+    ui->btnB->setEnabled(fromBase < 11 ? false : true);
+    ui->btnC->setEnabled(fromBase < 11 ? false : true);
+    ui->btnD->setEnabled(fromBase < 11 ? false : true);
+    ui->btnE->setEnabled(fromBase < 11 ? false : true);
+    ui->btnF->setEnabled(fromBase < 11 ? false : true);
 }
 
-void MainWindow::changeLabelTo(QString str) {
+int Helper::getFromBase() {
+    return fromBase;
+}
+
+void Helper::setToBase(int n) {
+    toBase = n;
+}
+
+int Helper::getToBase() {
+    return toBase;
+}
+
+void Helper::changeLabelTo() {
     bool ok;
-    int num = str.toInt(&ok, getBase());
-    cout<<num<<endl;
+    long long num = ui->lFrom->text().toLongLong(&ok, getFromBase());
+    QString newStr = QString::fromStdString(numToBaseStr(num, getToBase()));
+    ui->lTo->setText(newStr);
 }
 
-void MainWindow::changedLabelText() {
-    changeLabelTo(ui->lFrom->text());
+void Helper::changedLabelText() {
+    changeLabelTo();
 }
 
-void MainWindow::appendToLabelFrom(string str) {
+void Helper::appendToLabelFrom(string str) {
     QString qstr = QString::fromStdString(str);
     if (ui->lFrom->text() == "0") {
         if (str == "0")
@@ -69,13 +105,16 @@ void MainWindow::appendToLabelFrom(string str) {
             ui->lFrom->setText(qstr);
         }
     }
+    else if (ui->lFrom->text().length() >= 15) {
+        return;
+    }
     else {
         ui->lFrom->setText(ui->lFrom->text() + qstr);
     }
     emit changedLabelText();
 }
 
-void MainWindow::popFromLabelFrom() {
+void Helper::popFromLabelFrom() {
     if (ui->lFrom->text().length() == 1) {
         ui->lFrom->setText("0");
     }
@@ -87,110 +126,110 @@ void MainWindow::popFromLabelFrom() {
     emit changedLabelText();
 }
 
-void MainWindow::changeSystemFrom(int system) {
-    ui->btn2->setEnabled(system < 3 ? false : true);
-    ui->btn3->setEnabled(system < 4 ? false : true);
-    ui->btn4->setEnabled(system < 5 ? false : true);
-    ui->btn5->setEnabled(system < 5 ? false : true);
-    ui->btn6->setEnabled(system < 5 ? false : true);
-    ui->btn7->setEnabled(system < 5 ? false : true);
-    ui->btn8->setEnabled(system < 9 ? false : true);
-    ui->btn9->setEnabled(system < 9 ? false : true);
-    ui->btnA->setEnabled(system < 11 ? false : true);
-    ui->btnB->setEnabled(system < 11 ? false : true);
-    ui->btnC->setEnabled(system < 11 ? false : true);
-    ui->btnD->setEnabled(system < 11 ? false : true);
-    ui->btnE->setEnabled(system < 11 ? false : true);
-    ui->btnF->setEnabled(system < 11 ? false : true);
+void Helper::changedComboBoxFrom(int index) {
+    int systems[6] = {2,3,4,8,10,16};
+    int system = systems[index];
+    setFromBase(system);
     ui->lFrom->setText("0");
     this->setFocus();
     emit changedLabelText();
 }
 
-void MainWindow::changedComboBoxFrom(int index) {
+void Helper::changedComboBoxTo(int index) {
     int systems[6] = {2,3,4,8,10,16};
-    setBase(systems[index]);
-    changeSystemFrom(systems[index]);
+    setToBase(systems[index]);
+    this->setFocus();
+    emit changedLabelText();
 }
 
-void MainWindow::clearLabelFrom() {
+void Helper::clearLabelFrom() {
     ui->lFrom->setText("0");
     emit changedLabelText();
 }
 
-void MainWindow::clickedButton0() {
+void Helper::clickedButton0() {
     appendToLabelFrom("0");
 }
 
-void MainWindow::clickedButton1() {
+void Helper::clickedButton1() {
     appendToLabelFrom("1");
 }
 
-void MainWindow::clickedButton2() {
+void Helper::clickedButton2() {
     appendToLabelFrom("2");
 }
 
-void MainWindow::clickedButton3() {
+void Helper::clickedButton3() {
     appendToLabelFrom("3");
 }
 
-void MainWindow::clickedButton4() {
+void Helper::clickedButton4() {
     appendToLabelFrom("4");
 }
 
-void MainWindow::clickedButton5() {
+void Helper::clickedButton5() {
     appendToLabelFrom("5");
 }
 
-void MainWindow::clickedButton6() {
+void Helper::clickedButton6() {
     appendToLabelFrom("6");
 }
 
-void MainWindow::clickedButton7() {
+void Helper::clickedButton7() {
     appendToLabelFrom("7");
 }
 
-void MainWindow::clickedButton8() {
+void Helper::clickedButton8() {
     appendToLabelFrom("8");
 }
 
-void MainWindow::clickedButton9() {
+void Helper::clickedButton9() {
     appendToLabelFrom("9");
 }
 
-void MainWindow::clickedButtonA() {
+void Helper::clickedButtonA() {
     appendToLabelFrom("A");
 }
 
-void MainWindow::clickedButtonB() {
+void Helper::clickedButtonB() {
     appendToLabelFrom("B");
 }
 
-void MainWindow::clickedButtonC() {
+void Helper::clickedButtonC() {
     appendToLabelFrom("C");
 }
 
-void MainWindow::clickedButtonD() {
+void Helper::clickedButtonD() {
     appendToLabelFrom("D");
 }
 
-void MainWindow::clickedButtonE() {
+void Helper::clickedButtonE() {
     appendToLabelFrom("E");
 }
 
-void MainWindow::clickedButtonF() {
+void Helper::clickedButtonF() {
     appendToLabelFrom("F");
 }
 
-void MainWindow::clickedButtonBack() {
+void Helper::clickedButtonBack() {
     popFromLabelFrom();
 }
 
-void MainWindow::clickedButtonClear() {
+void Helper::clickedButtonClear() {
     clearLabelFrom();
 }
 
-void MainWindow::keyPressEvent(QKeyEvent* event) {
+void Helper::clickedButtonAbout() {
+    showInfo();
+}
+
+void Helper::showInfo() {
+    QMessageBox msgBox;
+    msgBox.setText(" Калькулятор-конвертер для преобразования чисел из произвольных систем счисления в произвольные (можно ограничиться 16-ричной системой).");
+    msgBox.exec();
+}
+
+void Helper::keyPressEvent(QKeyEvent* event) {
     switch(event->key()) {
     case Qt::Key_0:
         emit ui->btn0->animateClick();

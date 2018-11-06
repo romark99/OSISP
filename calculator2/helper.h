@@ -1,6 +1,7 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef HELPER_H
+#define HELPER_H
 
+#include "helper_global.h"
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <string>
@@ -10,21 +11,17 @@
 
 using namespace std;
 
-//void showInfo();
-//bool whatBtn(int, int);
-//string numToBaseStr(long long, int);
-
 namespace Ui {
-class MainWindow;
+class Helper;
 }
 
-class MainWindow : public QMainWindow
+class HELPERSHARED_EXPORT Helper : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit Helper(QWidget *parent = 0);
+    ~Helper();
     void appendToLabelFrom(string);
     void popFromLabelFrom();
     void clearLabelFrom();
@@ -36,6 +33,8 @@ public:
     int getFromBase();
     void setToBase(int);
     int getToBase();
+    string numToBaseStr(long long, int);
+    void showInfo();
 
 public slots:
     void clickedButton0();
@@ -60,16 +59,6 @@ public slots:
     void changedComboBoxFrom(int);
     void changedComboBoxTo(int);
 
-    void changedTimesNewRoman();
-    void changedArial();
-    void changedCalibri();
-    void changedFont8();
-    void changedFont12();
-    void changedFont14();
-    void changedNormal();
-    void changedBold();
-    void changedItalic();
-
 signals:
 
 
@@ -80,8 +69,7 @@ private:
     int fromBase;
     int toBase;
 
-    Ui::MainWindow *ui;
+    Ui::Helper *ui;
 };
 
-#endif // MAINWINDOW_H
-
+#endif // HELPER_H

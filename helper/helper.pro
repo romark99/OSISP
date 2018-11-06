@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-10-11T16:24:01
+# Project created by QtCreator 2018-10-10T15:40:19
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+TARGET = helper
+TEMPLATE = lib
 
-TARGET = calculator
-TEMPLATE = app
+DEFINES += HELPER_LIBRARY
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -22,19 +22,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-#LIBS += "C:\Users\romark\Dropbox\OSISP\project\OSISP\build-calculator-Desktop_Qt_5_11_1_MinGW_32bit-Debug\debug\about.dll"
-#LIBS += "C:\Users\romark\Dropbox\OSISP\project\OSISP\build-calculator-Desktop_Qt_5_11_1_MinGW_32bit-Debug\debug\helper_functions.dll"
-
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
+        helper.cpp
 
 HEADERS += \
-        mainwindow.h \
-    about.h \
-    about_global.h \
-    helper_functions.h \
-    helper_functions_global.h
+        helper.h \
+        helper_global.h 
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
 
 FORMS += \
-        mainwindow.ui
+    helper.ui
